@@ -21,7 +21,7 @@ import { fetchOpenAIAPIResponseStream,
         fetchGoogleGeminiResponseStream} from './components/FetchModelResponse';
 
 export const VIEW_TYPE_CHATBOT = 'chatbot-view';
-export const ANTHROPIC_MODELS = ['claude-instant-1.2', 'claude-2.0', 'claude-2.1', 'claude-3-haiku-20240307', 'claude-3-sonnet-20240229', 'claude-3-5-sonnet-latest', 'claude-3-opus-latest', 'claude-3-5-haiku-latest'];
+export const ANTHROPIC_MODELS = ['claude-instant-1.2', 'claude-2.0', 'claude-2.1', 'claude-3-haiku-20240307', 'claude-3-sonnet-20240229', 'claude-3-opus-latest', 'claude-3-5-haiku-latest', 'claude-3-5-sonnet-latest'];
 export const OPENAI_MODELS = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'];
 
 export function fileNameMessageHistoryJson(plugin: BMOGPT) {
