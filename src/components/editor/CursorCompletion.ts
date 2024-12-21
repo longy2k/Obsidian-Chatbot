@@ -2,7 +2,6 @@ import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
 import BMOGPT, { BMOSettings } from 'src/main';
 import { 
     fetchOllamaResponseEditor,
-    fetchOllamaResponseEditorStream,
     fetchRESTAPIURLDataEditor,
     fetchRESTAPIURLDataEditorStream,
     fetchAnthropicResponseEditor,
@@ -70,29 +69,15 @@ export async function cursorCompletionCommand(plugin: BMOGPT & Plugin, settings:
 
         // Use existing fetch methods with abort controller
         if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-            if (settings.OllamaConnection.enableStream) {
-                response = await fetchOllamaResponseEditorStream(
-                    settings, 
-                    contextText,
-                    editor,
-                    insertPosition,
-                    undefined,
-                    undefined,
-                    undefined,
-                    abortController.signal,
-                    plugin.app
-                );
-            } else {
-                response = await fetchOllamaResponseEditor(
-                    settings,
-                    contextText,
-                    undefined,
-                    undefined,
-                    undefined,
-                    abortController.signal,
-                    plugin.app
-                );
-            }
+            response = await fetchOllamaResponseEditor(
+                settings,
+                contextText,
+                undefined,
+                undefined,
+                undefined,
+                abortController.signal,
+                plugin.app
+            );
         }
         else if (settings.RESTAPIURLConnection.RESTAPIURL && settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)) {
             if (settings.RESTAPIURLConnection.enableStream) {

@@ -1,7 +1,7 @@
-import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from 'src/main';
+import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from '../../main';
 import { fetchModelRenameTitle } from './FetchRenameNoteTitle';
 import { MarkdownView, Notice } from 'obsidian';
-import { ANTHROPIC_MODELS, OPENAI_MODELS } from 'src/view';
+import { ANTHROPIC_MODELS, OPENAI_MODELS } from '../../view';
 import { 
     fetchOpenAIBaseAPIResponseEditor, 
     fetchOllamaResponseEditor, 
