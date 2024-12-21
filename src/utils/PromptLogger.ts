@@ -1,5 +1,5 @@
 import { TFile, Vault } from 'obsidian';
-import { BMOSettings } from '../main';
+import { BMOSettings } from 'src/main';
 
 export async function logRawPrompt(
     vault: Vault,
@@ -17,8 +17,9 @@ export async function logRawPrompt(
 
     try {
         const folderPath = settings.prompts.rawPromptsFolderPath || 'BMO/raw-prompts';
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `${timestamp}.md`;
+        const date = new Date();
+        const timestamp = date.toISOString().replace(/[:.]/g, '-');
+        const filename = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}-${String(date.getMinutes()).padStart(2, '0')}-${String(date.getSeconds()).padStart(2, '0')}.md`;
         const filePath = `${folderPath}/${filename}`;
 
         // Create BMO folder if it doesn't exist

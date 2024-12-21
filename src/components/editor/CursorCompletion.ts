@@ -1,5 +1,5 @@
 import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
-import BMOGPT, { BMOSettings } from '../../main';
+import BMOGPT, { BMOSettings } from 'src/main';
 import { 
     fetchOllamaResponseEditor,
     fetchOllamaResponseEditorStream,
@@ -15,7 +15,7 @@ import {
     fetchOpenRouterEditor,
     fetchOpenRouterEditorStream
 } from '../FetchModelEditor';
-import { ANTHROPIC_MODELS, OPENAI_MODELS } from '../../view';
+import { ANTHROPIC_MODELS, OPENAI_MODELS } from 'src/view';
 
 let abortController: AbortController | null = null;
 
@@ -238,9 +238,15 @@ export async function cursorCompletionCommand(plugin: BMOGPT & Plugin, settings:
     } catch (error) {
         if (error.name === 'AbortError') {
             new Notice('Generation stopped');
+        } else if (error instanceof Error) {
+            const errorMessage = error.message.includes('No compatible model found') 
+                ? 'No compatible model found' 
+                : `Error generating completion: ${error.message}`;
+            new Notice(errorMessage);
+            console.error('Cursor completion error:', error);
         } else {
-            new Notice('Error generating completion: ' + error.message);
-            console.error(error);
+            new Notice('Unknown error occurred during generation');
+            console.error('Unknown cursor completion error:', error);
         }
     } finally {
         generatingNotice.hide();

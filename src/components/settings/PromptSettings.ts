@@ -1,5 +1,5 @@
 import { Setting, SettingTab, TFile, TFolder, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import BMOGPT, { DEFAULT_SETTINGS } from '../../main';
 
 
 // Prompt Settings
