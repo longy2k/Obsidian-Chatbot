@@ -2,6 +2,8 @@ import { DataWriteOptions, Plugin, TFile} from 'obsidian';
 import { BMOView, VIEW_TYPE_CHATBOT, populateModelDropdown } from './view';
 import { BMOSettingTab } from './settings';
 import { promptSelectGenerateCommand, renameTitleCommand } from './components/editor/EditorCommands';
+import { cursorCompletionCommand, stopCompletion } from './components/editor/CursorCompletion';
+import { PromptInputModal } from './components/modals/PromptInputModal';
 import { colorToHex, isValidHexColor } from './utils/ColorConverter';
 import { bmoCodeBlockProcessor } from './components/editor/BMOCodeBlockProcessor';
 
@@ -38,6 +40,8 @@ export interface BMOSettings {
 	prompts: {
 		prompt: string,
 		promptFolderPath: string,
+		rawPromptsFolderPath: string,
+		logRawPrompts: boolean,
 	},
 	editor: {
 		systen_role: string,
@@ -152,6 +156,8 @@ export const DEFAULT_SETTINGS: BMOSettings = {
 	prompts: {
 		prompt: '',
 		promptFolderPath: 'BMO/Prompts',
+		rawPromptsFolderPath: 'BMO/raw-prompts',
+		logRawPrompts: false,
 	},
 	editor: {
 		systen_role: 'You are a helpful assistant.',
@@ -500,6 +506,42 @@ export default class BMOGPT extends Plugin {
             ],
         });
 
+		// Register context menu items
+		this.registerEvent(
+			this.app.workspace.on('editor-menu', (menu, editor) => {
+				// Add cursor completion
+				menu.addItem((item) => {
+					item
+						.setTitle('BMO: Continue writing')
+						.setIcon('bot')
+						.onClick(() => cursorCompletionCommand(this, this.settings));
+				});
+
+				// Add if text is selected
+				const selection = editor.getSelection();
+				if (selection) {
+					// Add send as prompt
+					menu.addItem((item) => {
+						item
+							.setTitle('BMO: Send as prompt')
+							.setIcon('message-square')
+							.onClick(() => promptSelectGenerateCommand(this, this.settings));
+					});
+
+					// Add use as prompt context
+					menu.addItem((item) => {
+						item
+							.setTitle('BMO: Use as prompt context')
+							.setIcon('message-plus')
+							.onClick(() => {
+								new PromptInputModal(this.app, this, this.settings, selection).open();
+							});
+					});
+				}
+			})
+		);
+
+		// Add file menu items
 		this.registerEvent(
 			this.app.workspace.on('file-menu', (menu, file) => {
 				if (!(file instanceof TFile)) {
@@ -508,25 +550,54 @@ export default class BMOGPT extends Plugin {
 	
 				menu.addItem((item) => {
 					item
-						.setTitle('BMO Chatbot: Generate new title')
+						.setTitle('BMO: Generate new title')
+						.setIcon('text')
 						.onClick(() => renameTitleCommand(this, this.settings));
 				});
 			})
 		);
 
+		// Register commands
 		this.addCommand({
-            id: 'prompt-select-generate',
-            name: 'Prompt Select Generate',
-            callback: () => {
-				promptSelectGenerateCommand(this, this.settings);
-            },
-            hotkeys: [
+			id: 'cursor-completion',
+			name: 'Continue writing from cursor',
+			callback: () => cursorCompletionCommand(this, this.settings),
+			hotkeys: [
+				{
+					modifiers: ['Mod', 'Shift'],
+					key: 'Enter',
+				},
+			],
+		});
+
+		this.addCommand({
+			id: 'stop-completion',
+			name: 'Stop current completion',
+			callback: () => stopCompletion(),
+			hotkeys: [
+				{
+					modifiers: ['Mod', 'Shift'],
+					key: 'Escape',
+				},
+			],
+		});
+
+		this.addCommand({
+			id: 'prompt-select-generate',
+			name: 'Send selection as prompt',
+			callback: () => promptSelectGenerateCommand(this, this.settings),
+			hotkeys: [
 				{
 					modifiers: ['Mod', 'Shift'],
 					key: '=',
 				},
-            ],
-        });
+			],
+		});
+
+		// Add stop button to ribbon
+		this.addRibbonIcon('square', 'Stop BMO completion', () => {
+			stopCompletion();
+		});
 
 		// Register BMO code block processor
 		bmoCodeBlockProcessor(this, this.settings);

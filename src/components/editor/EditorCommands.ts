@@ -1,8 +1,16 @@
-import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from 'src/main';
+import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from '../../main';
 import { fetchModelRenameTitle } from './FetchRenameNoteTitle';
 import { MarkdownView, Notice } from 'obsidian';
-import { ANTHROPIC_MODELS, OPENAI_MODELS } from 'src/view';
-import { fetchOpenAIBaseAPIResponseEditor, fetchOllamaResponseEditor, fetchRESTAPIURLDataEditor, fetchAnthropicResponseEditor, fetchMistralDataEditor, fetchGoogleGeminiDataEditor, fetchOpenRouterEditor } from '../FetchModelEditor';
+import { ANTHROPIC_MODELS, OPENAI_MODELS } from '../../view';
+import { 
+    fetchOpenAIBaseAPIResponseEditor, 
+    fetchOllamaResponseEditor, 
+    fetchRESTAPIURLDataEditor, 
+    fetchAnthropicResponseEditor, 
+    fetchMistralDataEditor, 
+    fetchGoogleGeminiDataEditor, 
+    fetchOpenRouterEditor 
+} from '../FetchModelEditor';
 
 export async function renameTitleCommand(plugin: BMOGPT, settings: BMOSettings) {
     let uniqueNameFound = false;
@@ -50,14 +58,14 @@ export async function renameTitleCommand(plugin: BMOGPT, settings: BMOSettings) 
 }
 
 // Prompt + Select + Generate command
-export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOSettings) {
+export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOSettings, customPrompt?: string) {
     const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    const select = view?.editor.getSelection();
+    const select = customPrompt || view?.editor.getSelection();
     if (view && select && select.trim() !== '') {
         const generatingNotice = new Notice('Generating...', 0);
         if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
             try {
-                const response = await fetchOllamaResponseEditor(settings, select); 
+                const response = await fetchOllamaResponseEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response ?? 'ERROR');
@@ -78,7 +86,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if (settings.RESTAPIURLConnection.RESTAPIURL && settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
             try {
-                const response = await fetchRESTAPIURLDataEditor(settings, select); 
+                const response = await fetchRESTAPIURLDataEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response);
@@ -99,7 +107,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
             try {
-                const response = await fetchAnthropicResponseEditor(settings, select); 
+                const response = await fetchAnthropicResponseEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 view.editor.replaceSelection(response);
             }
             catch (error) {
@@ -109,7 +117,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
             try {
-                const response = await fetchGoogleGeminiDataEditor(settings, select); 
+                const response = await fetchGoogleGeminiDataEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response);
@@ -130,7 +138,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
             try {
-                const response = await fetchMistralDataEditor(settings, select); 
+                const response = await fetchMistralDataEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response);
@@ -151,7 +159,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if (OPENAI_MODELS.includes(settings.general.model)) {
             try {
-                const response = await fetchOpenAIBaseAPIResponseEditor(settings, select); 
+                const response = await fetchOpenAIBaseAPIResponseEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response || '');
@@ -172,7 +180,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if ((settings.APIConnections.openAI.openAIBaseUrl != DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl) && settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)){
             try {
-                const response = await fetchOpenAIBaseAPIResponseEditor(settings, select); 
+                const response = await fetchOpenAIBaseAPIResponseEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response || '');
@@ -193,7 +201,7 @@ export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOS
         }
         else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
             try {
-                const response = await fetchOpenRouterEditor(settings, select); 
+                const response = await fetchOpenRouterEditor(settings, select, undefined, undefined, undefined, undefined, plugin.app); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
                 view.editor.replaceSelection(response);
