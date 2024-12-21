@@ -1,3 +1,14 @@
+# Notes on this fork
+
+Compared to the original repository, the dev branch of this fork contains the following added features:
+
+- Inline generation within the editor, with support for streaming, along with associated hotkeys and right-click context menu actions:
+  - Highlight text to limit the generation's context to the highlighted text
+  - Generate text at the cursor location, using what is above the cursor as context (but nothing below the cursor)
+  - Highlight text and use it as context with added instructions (an input popup appears). This is in contrast to the existing feature which uses the highlighted text as a prompt, verbatim.
+- An option to automatically create logs of the raw prompts sent to the model. Very useful for debugging and learning how to use
+the plugin.
+
 # BMO Chatbot for Obsidian
 
 Generate and brainstorm ideas while creating your notes using Large Language Models (LLMs) from Ollama, LM Studio, Anthropic, Google Gemini, Mistral AI, OpenAI, and more for Obsidian.
