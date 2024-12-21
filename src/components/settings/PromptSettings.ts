@@ -1,5 +1,5 @@
 import { Setting, SettingTab, TFile, TFolder, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import BMOGPT, { DEFAULT_SETTINGS } from '../../main';
 
 
 // Prompt Settings
@@ -97,6 +97,64 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: BMOGPT, Sett
             })
             .inputEl.addEventListener('focusout', async () => {
                 SettingTab.display();
+            })
+        );
+
+    new Setting(settingsContainer)
+        .setName('Raw Prompts Folder Path')
+        .setDesc('Directory where raw prompts will be logged.')
+        .addText(text => text
+            .setPlaceholder('BMO/raw-prompts')
+            .setValue(plugin.settings.prompts.rawPromptsFolderPath || DEFAULT_SETTINGS.prompts.rawPromptsFolderPath)
+            .onChange(async (value) => {
+                plugin.settings.prompts.rawPromptsFolderPath = value ? value : DEFAULT_SETTINGS.prompts.rawPromptsFolderPath;
+                if (value) {
+                    let folderPath = plugin.settings.prompts.rawPromptsFolderPath.trim() || DEFAULT_SETTINGS.prompts.rawPromptsFolderPath;
+                    
+                    // Remove trailing '/' if it exists
+                    while (folderPath.endsWith('/')) {
+                        folderPath = folderPath.substring(0, folderPath.length - 1);
+                        plugin.settings.prompts.rawPromptsFolderPath = folderPath;
+                    }
+                    
+                    const folder = plugin.app.vault.getAbstractFileByPath(folderPath);
+                    
+                    if (folder && folder instanceof TFolder) {
+                        text.inputEl.style.borderColor = ''; 
+                    } else {
+                        text.inputEl.style.borderColor = 'red'; 
+                    }
+                }
+                await plugin.saveSettings();
+            })
+            .inputEl.addEventListener('focusout', async () => {
+                SettingTab.display();
+            })
+        );
+
+    new Setting(settingsContainer)
+        .setName('Log Raw Prompts')
+        .setDesc('Save all prompts to markdown files for debugging.')
+        .addToggle(toggle => toggle
+            .setValue(plugin.settings.prompts.logRawPrompts)
+            .onChange(async (value) => {
+                plugin.settings.prompts.logRawPrompts = value;
+                if (value) {
+                    // Create raw prompts directory if it doesn't exist
+                    const folderPath = plugin.settings.prompts.rawPromptsFolderPath || DEFAULT_SETTINGS.prompts.rawPromptsFolderPath;
+                    const bmoFolder = 'BMO';
+
+                    // Create BMO folder if it doesn't exist
+                    if (!await plugin.app.vault.adapter.exists(bmoFolder)) {
+                        await plugin.app.vault.createFolder(bmoFolder);
+                    }
+
+                    // Create raw-prompts folder if it doesn't exist
+                    if (!await plugin.app.vault.adapter.exists(folderPath)) {
+                        await plugin.app.vault.createFolder(folderPath);
+                    }
+                }
+                await plugin.saveSettings();
             })
         );
 }

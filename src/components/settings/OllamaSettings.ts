@@ -233,7 +233,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: BMOGPT, Sett
             if (isNaN(intValue)) {
                 plugin.settings.OllamaConnection.ollamaParameters.num_thread = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread;
             } else {
-                plugin.settings.OllamaConnection.ollamaParameters.num_thread = intValue.toString();
+    new Setting(advancedSettingsContainer)
             }
 
             await plugin.saveSettings();

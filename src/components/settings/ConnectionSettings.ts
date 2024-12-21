@@ -40,4 +40,3 @@ export function addAPIConnectionSettings(containerEl: HTMLElement, plugin: BMOGP
     addOpenAIConnectionSettings(settingsContainer, plugin, SettingTab);
     addOpenRouterConnectionSettings(settingsContainer, plugin, SettingTab);
 }
-
